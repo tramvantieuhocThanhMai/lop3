@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lớp 3 - Tuần 5: Buổi học thể dục</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:ital,wght@0,500;0,700;0,800;1,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky:#dff1fb; --sky2:#c4e4f6; --ink:#1f3a4d; --soft:#557085;
+  --red:#e5412d; --sun:#ffc93c; --wood:#a86b32; --wood2:#7d4a1c;
+  --grass:#5fb04a; --ok:#2e9a63; --okbg:#e3f6ea; --bad:#e5412d; --badbg:#fdebe8;
+  --card:#ffffff; --line:#d5e6f0;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; font-family:'Nunito',"Segoe UI",Arial,sans-serif; color:var(--ink);
+  background:linear-gradient(var(--sky),#f3fbff 60%,#eaf7e4);
+  font-size:18px; line-height:1.6; padding:0 62px 60px 12px;
+}
+h1,h2,.display{font-family:'Baloo 2','Nunito',"Segoe UI",Arial,sans-serif}
+.wrap{max-width:760px; margin:0 auto}
+
+/* Đầu trang */
+header{position:relative; text-align:center; padding:26px 0 8px}
+header svg.sun{position:absolute; left:0; top:14px; width:64px; height:64px}
+header .week{font-weight:800; color:var(--soft); margin:0; font-size:16px}
+header h1{margin:0; font-size:clamp(34px,8vw,54px); line-height:1.1; color:var(--red);
+  text-shadow:0 3px 0 #fff, 0 5px 0 rgba(31,58,77,.12)}
+header p.lead{margin:6px 0 0; color:var(--soft); font-weight:700}
+
+.card{background:var(--card); border:2px solid var(--line); border-radius:18px; padding:18px; margin:16px 0}
+
+/* Thông tin học sinh */
+.info{display:grid; grid-template-columns:2fr 1fr; gap:12px}
+.info label{display:block; font-weight:800; font-size:16px; margin-bottom:4px}
+.info input{width:100%; font:inherit; font-weight:700; color:var(--ink); padding:11px 12px;
+  border:2px solid var(--line); border-radius:12px; background:#f8fcff}
+.info input:focus{outline:3px solid var(--sun); border-color:var(--wood)}
+.info input.err{border-color:var(--bad); background:var(--badbg)}
+.req{color:var(--red)}
+
+/* Bài đọc */
+.story{background:#fffdf4; border-color:#f0dfae}
+.story h2{margin:0 0 6px; color:var(--red); font-size:28px; text-align:center}
+.story p{margin:0 0 10px; text-indent:1.2em; font-weight:700}
+.story .src{text-align:right; font-style:italic; font-weight:600; color:var(--soft); text-indent:0; margin:0}
+.story .scene{display:block; width:100%; max-width:420px; height:auto; margin:4px auto 12px}
+
+/* Câu hỏi */
+.q{scroll-margin-top:14px}
+.q .num{display:inline-block; font-family:'Baloo 2',sans-serif; font-weight:800; color:#fff; background:var(--wood);
+  border-radius:10px; padding:0 10px; margin-right:6px; font-size:17px}
+.q .ask{font-weight:800; margin:0 0 6px}
+.q .quote{margin:6px 0 10px; padding:8px 12px; border-left:5px solid var(--sun); background:#fff8dc;
+  border-radius:0 10px 10px 0; font-style:italic; font-weight:600}
+.q .quote b{font-style:normal; color:var(--red)}
+.opts{display:grid; gap:8px; margin-top:8px}
+.opt{display:flex; align-items:flex-start; gap:10px; padding:11px 12px; border:2px solid var(--line);
+  border-radius:12px; cursor:pointer; font-weight:700; background:#f8fcff; transition:background .15s,border-color .15s}
+.opt input{flex:none; width:20px; height:20px; margin:4px 0 0; accent-color:var(--wood)}
+.opt:hover{border-color:var(--wood)}
+.opt.picked{background:#fff3cf; border-color:var(--sun)}
+.opt:focus-within{outline:3px solid var(--sun)}
+.q.miss{border-color:var(--bad)}
+.q.done .opt{cursor:default}
+.q.done .opt:hover{border-color:var(--line)}
+.q.done .opt.right{background:var(--okbg); border-color:var(--ok)}
+.q.done .opt.wrong{background:var(--badbg); border-color:var(--bad)}
+.q.done .opt.right::after{content:"✔"; margin-left:auto; color:var(--ok); font-weight:800}
+.q.done .opt.wrong::after{content:"✘"; margin-left:auto; color:var(--bad); font-weight:800}
+.q.is-right{border-color:var(--ok)}
+.q.is-wrong{border-color:var(--bad)}
+.explain{display:none; margin-top:10px; padding:10px 12px; border-radius:12px; background:#eef7fd; font-weight:700}
+.q.done .explain{display:block}
+.explain .tag{font-weight:800}
+.q.is-right .explain .tag{color:var(--ok)}
+.q.is-wrong .explain .tag{color:var(--bad)}
+
+/* Nút */
+.actions{text-align:center; margin:22px 0}
+button{font-family:'Baloo 2','Nunito',sans-serif; font-weight:800; font-size:21px; border:0; border-radius:14px;
+  padding:12px 26px; cursor:pointer; color:#fff; background:var(--red); box-shadow:0 5px 0 #a82a1b}
+button:active{transform:translateY(3px); box-shadow:0 2px 0 #a82a1b}
+button:focus-visible{outline:4px solid var(--sun)}
+button.second{background:var(--wood); box-shadow:0 5px 0 var(--wood2)}
+#msg{color:var(--bad); font-weight:800; min-height:1.6em; margin:10px 0 0}
+
+/* Kết quả */
+#result{display:none; text-align:center; border-color:var(--sun); background:#fffdf4}
+#result.show{display:block}
+#result .score{font-family:'Baloo 2',sans-serif; font-weight:800; font-size:46px; color:var(--red); line-height:1.1; margin:0}
+#result .who{font-weight:800; margin:0}
+#result .say{margin:6px 0 14px; font-weight:700}
+
+/* Cột leo */
+.pole{position:fixed; top:0; right:6px; bottom:0; width:50px; pointer-events:none; z-index:5}
+.pole .shaft{position:absolute; left:19px; top:44px; bottom:22px; width:12px; border-radius:6px;
+  background:linear-gradient(90deg,var(--wood2),var(--wood) 45%,#c98a4b)}
+.pole .bar{position:absolute; left:0; right:0; top:40px; height:9px; border-radius:5px; background:var(--wood2)}
+.pole .ground{position:absolute; left:-4px; right:-6px; bottom:0; height:24px; background:var(--grass); border-radius:50% 50% 0 0/100% 100% 0 0}
+.pole .track{position:absolute; left:0; right:0; top:40px; bottom:22px}
+.climber{position:absolute; left:3px; width:44px; height:52px; bottom:0; transition:bottom .7s cubic-bezier(.3,1.4,.5,1)}
+.climber svg{width:100%; height:100%; display:block}
+.climber .stand{display:none}
+.climber.top{bottom:100% !important}
+.climber.top .climb{display:none}
+.climber.top .stand{display:block}
+.climber.wiggle svg{animation:wig .5s}
+@keyframes wig{0%,100%{transform:rotate(0)}30%{transform:rotate(-7deg)}70%{transform:rotate(7deg)}}
+.cheer{position:fixed; right:60px; z-index:6; background:#fff; border:2px solid var(--sun); border-radius:14px 14px 2px 14px;
+  padding:3px 10px; font-family:'Baloo 2',sans-serif; font-weight:800; color:var(--red); font-size:16px; white-space:nowrap;
+  opacity:0; transform:translateY(6px); transition:opacity .25s,transform .25s; pointer-events:none}
+.cheer.show{opacity:1; transform:none}
+
+/* Pháo giấy */
+.confetti{position:fixed; top:-14px; width:10px; height:14px; z-index:9; pointer-events:none; animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+
+@media (min-width:900px){
+  body{padding:0 90px 60px 20px}
+  .pole{right:calc(50% - 460px); width:60px}
+  .pole .shaft{left:24px}
+  .climber{left:8px}
+  .cheer{right:calc(50% - 400px)}
+}
+@media (max-width:480px){
+  body{font-size:17px; padding-left:8px}
+  .info{grid-template-columns:1fr}
+  .card{padding:14px}
+  header svg.sun{width:46px; height:46px}
+  header{padding-top:58px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .climber{transition:none}
+  .climber.wiggle svg{animation:none}
+}
+</style>
+</head>
+<body>
+
+<!-- Cột leo: Nen-li leo cao dần theo số câu em đã làm -->
+<div class="pole" aria-hidden="true">
+  <div class="shaft"></div>
+  <div class="bar"></div>
+  <div class="ground"></div>
+  <div class="track">
+    <div class="climber" id="climber">
+      <svg class="climb" viewBox="0 0 44 52">
+        <circle cx="16" cy="11" r="8" fill="#ffd9b0"/>
+        <path d="M8 9c1-7 13-8 16-1-5 1-9 0-12-2-1 2-2 3-4 3z" fill="#7a4520"/>
+        <circle cx="14" cy="12" r="1.2" fill="#1f3a4d"/><circle cx="20" cy="12" r="1.2" fill="#1f3a4d"/>
+        <path d="M14 15.5q3 2 6 0" stroke="#c0392b" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+        <rect x="9" y="19" width="14" height="14" rx="5" fill="#fff" stroke="#c9d9e4"/>
+        <path d="M20 22l9-5M20 27l9-1" stroke="#ffd9b0" stroke-width="4" stroke-linecap="round"/>
+        <rect x="9" y="31" width="14" height="8" rx="3" fill="#2f6fc2"/>
+        <path d="M13 38l5 6 10-2M19 38l4 9 6 0" stroke="#ffd9b0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <svg class="stand" viewBox="0 0 44 52">
+        <path d="M14 22L5 10M30 22l9-12" stroke="#ffd9b0" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="22" cy="11" r="8" fill="#ffd9b0"/>
+        <path d="M14 9c1-7 13-8 16-1-5 1-9 0-12-2-1 2-2 3-4 3z" fill="#7a4520"/>
+        <circle cx="19" cy="11" r="1.2" fill="#1f3a4d"/><circle cx="25" cy="11" r="1.2" fill="#1f3a4d"/>
+        <path d="M18 14q4 4 8 0z" fill="#c0392b"/>
+        <rect x="14" y="19" width="16" height="15" rx="5" fill="#fff" stroke="#c9d9e4"/>
+        <rect x="14" y="32" width="16" height="8" rx="3" fill="#2f6fc2"/>
+        <path d="M18 40v10M26 40v10" stroke="#ffd9b0" stroke-width="4" stroke-linecap="round"/>
+        <path d="M15 51h6M23 51h6" stroke="#e5412d" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+</div>
+<div class="cheer" id="cheer" aria-hidden="true">Cố lên!</div>
+
+<div class="wrap">
+  <header>
+    <svg class="sun" viewBox="0 0 64 64" aria-hidden="true">
+      <g stroke="#ffc93c" stroke-width="4" stroke-linecap="round">
+        <path d="M32 3v8M32 53v8M3 32h8M53 32h8M11 11l6 6M47 47l6 6M53 11l-6 6M17 47l-6 6"/>
+      </g>
+      <circle cx="32" cy="32" r="16" fill="#ffc93c"/>
+      <circle cx="26" cy="30" r="2" fill="#7d4a1c"/><circle cx="38" cy="30" r="2" fill="#7d4a1c"/>
+      <path d="M25 36q7 6 14 0" stroke="#7d4a1c" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    </svg>
+    <p class="week">Tiếng Việt lớp 3 – Tuần 5</p>
+    <h1>Buổi học thể dục</h1>
+    <p class="lead">Mỗi câu em làm xong, bạn Nen-li leo cao thêm một đoạn. Giúp bạn lên tới xà ngang nhé!</p>
+  </header>
+
+  <section class="card info" aria-label="Thông tin học sinh">
+    <div>
+      <label for="studentName">Họ và tên <span class="req">*</span></label>
+      <input type="text" id="studentName" autocomplete="name" placeholder="Nhập họ và tên của em">
+    </div>
+    <div>
+      <label for="studentClass">Lớp <span class="req">*</span></label>
+      <input type="text" id="studentClass" autocomplete="off" placeholder="Ví dụ: 3A">
+    </div>
+  </section>
+
+  <section class="card story" aria-labelledby="storyTitle">
+    <h2 id="storyTitle">Đọc văn bản sau</h2>
+    <svg class="scene" viewBox="0 0 420 150" role="img" aria-label="Hình minh họa: cột cao, xà ngang và các bạn nhỏ cổ vũ">
+      <ellipse cx="80" cy="30" rx="34" ry="12" fill="#fff"/><ellipse cx="330" cy="22" rx="40" ry="13" fill="#fff"/>
+      <path d="M0 132q210-26 420 0v18H0z" fill="#5fb04a"/>
+      <rect x="150" y="30" width="10" height="106" rx="4" fill="#a86b32"/>
+      <rect x="262" y="30" width="10" height="106" rx="4" fill="#a86b32"/>
+      <rect x="140" y="26" width="142" height="8" rx="4" fill="#7d4a1c"/>
+      <g>
+        <circle cx="174" cy="78" r="9" fill="#ffd9b0"/>
+        <path d="M165 76c1-8 15-9 18-1-6 1-10 0-13-2-1 2-3 3-5 3z" fill="#7a4520"/>
+        <rect x="166" y="87" width="15" height="15" rx="5" fill="#fff" stroke="#c9d9e4"/>
+        <rect x="166" y="100" width="15" height="8" rx="3" fill="#2f6fc2"/>
+        <path d="M168 90l-11-6M168 96l-11-2M170 107l-12 5M176 107l-17 12" stroke="#ffd9b0" stroke-width="4" stroke-linecap="round" fill="none"/>
+        <path d="M188 70q3 3 0 6M192 82q3 3 0 6" stroke="#5aa9dd" stroke-width="2" fill="none" stroke-linecap="round"/>
+      </g>
+      <g>
+        <circle cx="60" cy="100" r="9" fill="#ffd9b0"/><path d="M51 98c2-9 16-9 18 0z" fill="#3a2a1a"/>
+        <rect x="52" y="109" width="16" height="16" rx="5" fill="#ffc93c"/>
+        <path d="M54 112L42 98M66 112l12-14M56 125v10M64 125v10" stroke="#ffd9b0" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="350" cy="100" r="9" fill="#ffd9b0"/><path d="M341 98c2-9 16-9 18 0z" fill="#7a4520"/>
+        <rect x="342" y="109" width="16" height="16" rx="5" fill="#e5412d"/>
+        <path d="M344 112L332 98M356 112l12-14M346 125v10M354 125v10" stroke="#ffd9b0" stroke-width="4" stroke-linecap="round"/>
+      </g>
+      <text x="60" y="80" text-anchor="middle" font-family="Baloo 2, Nunito, sans-serif" font-weight="800" font-size="15" fill="#e5412d">Cố lên!</text>
+      <text x="350" y="80" text-anchor="middle" font-family="Baloo 2, Nunito, sans-serif" font-weight="800" font-size="15" fill="#e5412d">Cố lên!</text>
+    </svg>
+    <h2 style="margin-top:0">Buổi học thể dục</h2>
+    <p>Hôm nay có buổi học thể dục. Thầy giáo dẫn chúng tôi đến bên một cái cột cao, thẳng đứng. Chúng tôi phải leo lên đến trên cùng, rồi đứng thẳng người trên chiếc xà ngang.</p>
+    <p>Đê-rốt-xi và Cô-rét-ti leo như hai con khỉ. Xtác-đi thì thở hồng hộc, mặt đỏ như chú gà tây. Ga-rô-nê leo dễ như không. Tưởng chừng như cậu có thể vác thêm một người nữa trên vai vì cậu khỏe chẳng khác gì một con bò mộng.</p>
+    <p>Đến lượt Nen-li. Bạn này được miễn học thể dục vì bị tật từ nhỏ nhưng cố xin thầy cho được tập giống như mọi người.</p>
+    <p>Nen-li bắt đầu leo một cách chật vật. Mặt cậu đỏ như lửa, mồ hôi ướt đẫm trán. Thầy giáo bảo cậu có thể xuống nhưng cậu vẫn cố sức leo. Mọi người vừa thấp thỏm sợ cậu tuột tay ngã xuống đất, vừa luôn miệng khuyến khích: “Cố lên! Cố lên!”.</p>
+    <p>Nen-li rướn người lên và chỉ còn cách xà ngang hai ngón tay. “Hoan hô! Cố tí nữa thôi!” – Mọi người reo lên. Lát sau, Nen-li đã nắm chặt cái xà.</p>
+    <p>Thầy giáo nói: “Giỏi lắm! Thôi, con xuống đi!”. Nhưng Nen-li còn muốn đứng trên chiếc xà như những người khác.</p>
+    <p>Sau vài lần cố gắng, cậu đặt được hai khuỷu tay, rồi hai đầu gối, cuối cùng là bàn chân lên xà. Thế là cậu đứng thẳng người lên, thở dốc, nhưng nét mặt rạng rỡ về chiến thắng, nhìn xuống chúng tôi.</p>
+    <p class="src">(A-mi-xi, Hoàng Thiếu Sơn dịch)</p>
+  </section>
+
+  <div id="quiz"></div>
+
+  <div class="actions">
+    <button type="button" id="submitBtn">Nộp bài</button>
+    <p id="msg" role="alert"></p>
+  </div>
+
+  <section class="card" id="result" aria-live="polite">
+    <p class="who" id="resWho"></p>
+    <p class="score" id="resScore"></p>
+    <p class="say" id="resSay"></p>
+    <button type="button" class="second" id="retryBtn">Làm lại</button>
+  </section>
+</div>
+
+<script>
+var BAI = "Lớp 3 - Tuần 5";
+var SHEET_URL = "https://script.google.com/macros/s/AKfycbyvWKGiEadJZC0m2E_ETWm1oGUXTJ7RaNEGJkDT_TiX5UGxaav75rKJ0mN2OV-hQ4s/exec";
+
+var QUESTIONS = [
+  { ask: "Trong giờ thể dục, thầy giáo yêu cầu các bạn phải làm gì?",
+    opts: ["Yêu cầu các bạn leo lên cột cao, thẳng đứng.",
+           "Yêu cầu các bạn leo lên cột cao, đứng thẳng người trên chiếc xà.",
+           "Yêu cầu các bạn phải đứng thẳng người trên chiếc xà.",
+           "Yêu cầu các bạn phải đứng thẳng người trên chiếc cột."],
+    correct: 1,
+    explain: "Bài đọc viết: “Chúng tôi phải leo lên đến trên cùng, rồi đứng thẳng người trên chiếc xà ngang.” Các bạn phải làm đủ hai việc: leo lên cột và đứng thẳng trên xà." },
+  { ask: "Vì sao cậu bé Nen-li được miễn học thể dục?",
+    opts: ["Vì cậu bị đau một bên chân.", "Vì cậu hay bị ốm.", "Vì cậu bé bị tật nguyền.", "Vì cậu bé không thích tập thể dục."],
+    correct: 2,
+    explain: "Bài đọc viết: “Bạn này được miễn học thể dục vì bị tật từ nhỏ”." },
+  { ask: "Nen-li đã leo lên cột như thế nào?",
+    opts: ["Cậu leo rất dễ dàng và nhanh nhẹn.", "Cậu quan sát và học rất nhanh.", "Nen-li leo lên rất chật vật.", "Không được nhắc đến."],
+    correct: 2,
+    explain: "Bài đọc viết: “Nen-li bắt đầu leo một cách chật vật. Mặt cậu đỏ như lửa, mồ hôi ướt đẫm trán.”" },
+  { ask: "Từ nào dưới đây là từ chỉ hoạt động trong câu sau?",
+    quote: "“Chúng tôi phải leo lên đến trên cùng, rồi đứng thẳng người trên chiếc xà ngang.”",
+    opts: ["chúng tôi", "leo, đứng", "trên cùng", "chiếc xà ngang"],
+    correct: 1,
+    explain: "“leo” và “đứng” là những việc các bạn làm nên là từ chỉ hoạt động." },
+  { ask: "Câu nào dưới đây KHÔNG thuộc kiểu câu nêu hoạt động?",
+    opts: ["Đê-rốt-xi và Cô-rét-ti leo như hai con khỉ.",
+           "Mặt cậu đỏ như lửa, mồ hôi ướt đẫm trán.",
+           "Nen-li rướn người lên và chỉ còn cách xà ngang hai ngón tay.",
+           "Thầy giáo dẫn chúng tôi đến bên một cái cột cao, thẳng đứng."],
+    correct: 1,
+    explain: "Câu “Mặt cậu đỏ như lửa, mồ hôi ướt đẫm trán.” cho biết mặt và mồ hôi của Nen-li như thế nào, nên là câu nêu đặc điểm. Các câu còn lại có từ chỉ hoạt động: leo, rướn, dẫn." },
+  { ask: "Dòng nào dưới đây chỉ gồm các từ ngữ chỉ sự vật?",
+    opts: ["thầy giáo, Nen-li, xà ngang, bàn chân",
+           "thầy giáo, leo, xà ngang, bàn chân",
+           "Nen-li, đứng, khuỷu tay, bàn chân",
+           "cột, cao, xà ngang, thầy giáo"],
+    correct: 0,
+    explain: "Dòng A chỉ có từ chỉ người, đồ vật, bộ phận cơ thể. Các dòng khác lẫn từ chỉ hoạt động (leo, đứng) hoặc từ chỉ đặc điểm (cao)." },
+  { ask: "Trong câu sau, từ nào chỉ hoạt động?",
+    quote: "“Nen-li bắt đầu leo một cách chật vật.”",
+    opts: ["Nen-li", "bắt đầu", "leo", "chật vật"],
+    correct: 2,
+    explain: "“leo” là việc Nen-li làm nên là từ chỉ hoạt động. “Nen-li” là tên người, “chật vật” cho biết bạn leo như thế nào." },
+  { ask: "Trong câu sau, từ “rạng rỡ” là từ chỉ:",
+    quote: "“Thế là cậu đứng thẳng người lên, thở dốc, nhưng nét mặt <b>rạng rỡ</b> về chiến thắng.”",
+    opts: ["sự vật", "hoạt động", "đặc điểm", "con người"],
+    correct: 2,
+    explain: "“rạng rỡ” cho biết nét mặt của Nen-li như thế nào nên là từ chỉ đặc điểm." },
+  { ask: "Các từ in đậm trong những câu sau thuộc nhóm nào?",
+    quote: "“Mặt cậu <b>đỏ</b> như lửa.”<br>“Ga-rô-nê leo dễ như không vì cậu <b>khỏe</b> chẳng khác gì một con bò mộng.”",
+    opts: ["Từ chỉ sự vật", "Từ chỉ hoạt động", "Từ chỉ đặc điểm", "Từ chỉ người"],
+    correct: 2,
+    explain: "“đỏ” chỉ màu sắc, “khỏe” chỉ sức lực. Cả hai đều là từ chỉ đặc điểm." },
+  { ask: "Câu nào dưới đây có sử dụng biện pháp so sánh?",
+    opts: ["Nen-li bắt đầu leo một cách chật vật.",
+           "Mặt cậu đỏ như lửa, mồ hôi ướt đẫm trán.",
+           "Thầy giáo bảo cậu có thể xuống.",
+           "Nen-li đã nắm chặt cái xà."],
+    correct: 1,
+    explain: "Câu B so sánh mặt cậu với lửa bằng từ “như”: mặt cậu đỏ như lửa." }
+];
+var LETTERS = ["A", "B", "C", "D"];
+
+/* Chấm điểm: answers là mảng chỉ số đáp án em chọn (-1 nếu chưa chọn) */
+function grade(answers){
+  var earned = 0;
+  for (var i = 0; i < QUESTIONS.length; i++){
+    if (answers[i] === QUESTIONS[i].correct) earned++;
+  }
+  return { earned: earned, possible: QUESTIONS.length };
+}
+
+if (typeof document !== "undefined") (function(){
+  var quiz = document.getElementById("quiz");
+  var nameInput = document.getElementById("studentName");
+  var classInput = document.getElementById("studentClass");
+  var msg = document.getElementById("msg");
+  var climber = document.getElementById("climber");
+  var cheer = document.getElementById("cheer");
+  var result = document.getElementById("result");
+  var submitted = false;
+  var cheerTimer = null;
+  var CHEERS = ["Cố lên!", "Hoan hô!", "Cố tí nữa thôi!", "Giỏi lắm!"];
+
+  function render(){
+    var html = "";
+    QUESTIONS.forEach(function(q, i){
+      html += '<section class="card q" id="q' + i + '">';
+      html += '<p class="ask"><span class="num">Câu ' + (i + 1) + '</span>' + q.ask + '</p>';
+      if (q.quote) html += '<div class="quote">' + q.quote + '</div>';
+      html += '<div class="opts" role="radiogroup" aria-label="Câu ' + (i + 1) + '">';
+      q.opts.forEach(function(o, j){
+        html += '<label class="opt"><input type="radio" name="q' + i + '" value="' + j + '"><span>' + LETTERS[j] + '. ' + o + '</span></label>';
+      });
+      html += '</div><div class="explain"><span class="tag"></span> ' + q.explain + '</div></section>';
+    });
+    quiz.innerHTML = html;
+  }
+
+  function getAnswers(){
+    return QUESTIONS.map(function(q, i){
+      var c = document.querySelector('input[name="q' + i + '"]:checked');
+      return c ? parseInt(c.value, 10) : -1;
+    });
+  }
+
+  function setClimber(step, wiggle){
+    climber.classList.toggle("top", step >= QUESTIONS.length);
+    climber.style.bottom = (Math.min(step, QUESTIONS.length - 1) / QUESTIONS.length * 100) + "%";
+    if (wiggle){
+      climber.classList.remove("wiggle");
+      void climber.offsetWidth;
+      climber.classList.add("wiggle");
+    }
+  }
+
+  function sayCheer(text){
+    var r = climber.getBoundingClientRect();
+    cheer.textContent = text;
+    cheer.style.top = Math.max(6, r.top - 6) + "px";
+    cheer.classList.add("show");
+    clearTimeout(cheerTimer);
+    cheerTimer = setTimeout(function(){ cheer.classList.remove("show"); }, 1500);
+  }
+
+  function confetti(){
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var colors = ["#e5412d", "#ffc93c", "#5fb04a", "#2f6fc2", "#a86b32"];
+    for (var i = 0; i < 60; i++){
+      var c = document.createElement("div");
+      c.className = "confetti";
+      c.style.left = (Math.random() * 100) + "vw";
+      c.style.background = colors[i % colors.length];
+      c.style.animationDuration = (2 + Math.random() * 2) + "s";
+      c.style.animationDelay = (Math.random() * 0.8) + "s";
+      document.body.appendChild(c);
+      (function(el){ setTimeout(function(){ el.remove(); }, 5200); })(c);
+    }
+  }
+
+  quiz.addEventListener("change", function(e){
+    if (submitted || !e.target.matches('input[type="radio"]')) return;
+    var card = e.target.closest(".q");
+    card.classList.remove("miss");
+    card.querySelectorAll(".opt").forEach(function(o){ o.classList.remove("picked"); });
+    e.target.closest(".opt").classList.add("picked");
+    var n = getAnswers().filter(function(a){ return a >= 0; }).length;
+    /* Trước khi nộp bài, Nen-li chỉ leo tới sát xà ngang */
+    setClimber(Math.min(n, QUESTIONS.length - 1), true);
+    setTimeout(function(){ sayCheer(CHEERS[n % CHEERS.length]); }, 400);
+    msg.textContent = "";
+  });
+
+  [nameInput, classInput].forEach(function(inp){
+    inp.addEventListener("input", function(){ inp.classList.remove("err"); });
+  });
+
+  document.getElementById("submitBtn").addEventListener("click", function(){
+    if (submitted) return;
+    var name = nameInput.value.trim();
+    var lop = classInput.value.trim();
+    nameInput.classList.toggle("err", !name);
+    classInput.classList.toggle("err", !lop);
+    if (!name){ msg.textContent = "Em hãy điền họ và tên trước khi nộp bài nhé!"; nameInput.focus(); return; }
+    if (!lop){ msg.textContent = "Em hãy điền lớp trước khi nộp bài nhé!"; classInput.focus(); return; }
+
+    var answers = getAnswers();
+    var firstMiss = -1;
+    answers.forEach(function(a, i){
+      var card = document.getElementById("q" + i);
+      card.classList.toggle("miss", a < 0);
+      if (a < 0 && firstMiss < 0) firstMiss = i;
+    });
+    if (firstMiss >= 0){
+      msg.textContent = "Em còn câu chưa làm. Hãy làm hết 10 câu rồi nộp bài nhé!";
+      document.getElementById("q" + firstMiss).scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+
+    submitted = true;
+    msg.textContent = "";
+    var g = grade(answers);
+
+    QUESTIONS.forEach(function(q, i){
+      var card = document.getElementById("q" + i);
+      var ok = answers[i] === q.correct;
+      card.classList.add("done", ok ? "is-right" : "is-wrong");
+      card.querySelectorAll(".opt").forEach(function(o, j){
+        o.classList.remove("picked");
+        o.querySelector("input").disabled = true;
+        if (j === q.correct) o.classList.add("right");
+        else if (j === answers[i]) o.classList.add("wrong");
+      });
+      card.querySelector(".tag").textContent = ok
+        ? "Em làm đúng rồi!"
+        : "Chưa đúng. Đáp án đúng là " + LETTERS[q.correct] + ".";
+    });
+
+    /* Gửi kết quả về Google Sheet của giáo viên */
+    try {
+      fetch(SHEET_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          bai: BAI,
+          hoten: name,
+          lop: lop,
+          diem: g.earned,
+          tongdiem: g.possible
+        })
+      }).catch(function(){});
+    } catch (e) {}
+
+    var say;
+    if (g.earned === g.possible) say = "Tuyệt vời! Nen-li đã đứng thẳng trên xà ngang nhờ em đấy!";
+    else if (g.earned >= 8) say = "Giỏi lắm! Chỉ còn cách xà ngang một chút thôi. Em xem lại câu sai nhé.";
+    else if (g.earned >= 5) say = "Khá lắm! Em đọc phần giải thích ở từng câu rồi thử lại nhé.";
+    else say = "Cố lên! Giống như Nen-li, em hãy đọc lại bài và thử lần nữa nhé.";
+    document.getElementById("resWho").textContent = name + " – Lớp " + lop.replace(/^lớp\s*/i, "");
+    document.getElementById("resScore").textContent = g.earned + " / " + g.possible + " điểm";
+    document.getElementById("resSay").textContent = say;
+    result.classList.add("show");
+    document.getElementById("submitBtn").style.display = "none";
+    setClimber(g.earned, true);
+    if (g.earned === g.possible) confetti();
+    result.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+
+  document.getElementById("retryBtn").addEventListener("click", function(){
+    submitted = false;
+    render();
+    result.classList.remove("show");
+    document.getElementById("submitBtn").style.display = "";
+    msg.textContent = "";
+    setClimber(0, false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  render();
+  setClimber(0, false);
+})();
+
+if (typeof module !== "undefined") module.exports = { QUESTIONS: QUESTIONS, grade: grade, BAI: BAI, SHEET_URL: SHEET_URL };
+</script>
+</body>
+</html>
