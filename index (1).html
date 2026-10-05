@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phiếu bài tập Tiếng Việt lớp 3</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",Roboto,Arial,sans-serif;color:#263238;background:linear-gradient(180deg,#dff3ff 0,#f2fbf3 300px,#f7fcf4 100%);min-height:100vh;padding:0 14px 60px}
+.wrap{max-width:640px;margin:0 auto}
+header{text-align:center;padding:30px 0 10px}
+header .ic{font-size:48px}
+h1{margin:6px 0 4px;font-size:30px;color:#2b7d4f}
+header p{margin:0;color:#5d6b70;font-size:17px}
+#list{margin-top:18px}
+a.item{display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;background:#fff;border:2px solid #dbe9df;border-radius:18px;padding:16px;margin:12px 0;box-shadow:0 5px 14px rgba(43,125,79,.08);transition:transform .12s,border-color .12s}
+a.item:hover,a.item:active{transform:scale(.98);border-color:#3fa56b}
+.wk{flex:0 0 64px;height:64px;border-radius:16px;background:#3fa56b;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;line-height:1.05}
+.wk small{font-size:12px;font-weight:700}.wk b{font-size:26px}
+.tt{font-weight:700;font-size:18px}.ds{color:#5d6b70;font-size:15px}
+.go{margin-left:auto;font-size:22px;color:#3fa56b}
+.empty{text-align:center;color:#5d6b70}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="ic">📚</div>
+    <h1>Tiếng Việt lớp 3</h1>
+    <p>Em chọn tuần để làm phiếu bài tập nhé.</p>
+  </header>
+  <div id="list"></div>
+</div>
+<script>
+/* Trang tự tìm mọi file phieu-lop3-tuan<N>.html có trong kho và gắn vào đây.
+   Danh sách dưới đây chỉ là dự phòng khi không tự tìm được, và là nơi ghi tên bài cho đẹp. */
+var REPO = "tramvantieuhocThanhMai/lop3";
+var KNOWN = {
+  5: "",
+  6: "Khu vườn trên sân thượng",
+  7: "Tôi đi học",
+  8: ""
+};
+
+function render(weeks){
+  var box = document.getElementById('list');
+  weeks.sort(function(a,b){ return a-b; });
+  if(!weeks.length){ box.innerHTML = '<p class="empty">Chưa có phiếu bài tập nào.</p>'; return; }
+  var h = '';
+  weeks.forEach(function(n){
+    var name = KNOWN[n] || '';
+    h += '<a class="item" href="phieu-lop3-tuan'+n+'.html">'
+       + '<div class="wk"><small>TUẦN</small><b>'+n+'</b></div>'
+       + '<div><div class="tt">Phiếu bài tập tuần '+n+'</div>'
+       + (name ? '<div class="ds">'+name+'</div>' : '<div class="ds">Bấm để làm bài</div>')
+       + '</div><span class="go">➜</span></a>';
+  });
+  box.innerHTML = h;
+}
+
+var fallback = Object.keys(KNOWN).map(Number);
+render(fallback);
+
+try{
+  fetch("https://api.github.com/repos/"+REPO+"/contents/")
+    .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .then(function(files){
+      var seen = {}, weeks = [];
+      fallback.forEach(function(n){ seen[n] = 1; weeks.push(n); });
+      files.forEach(function(f){
+        var m = /^phieu-lop3-tuan(\d+)\.html$/i.exec(f.name || '');
+        if(m){ var n = parseInt(m[1],10); if(!seen[n]){ seen[n] = 1; weeks.push(n); } }
+      });
+      render(weeks);
+    })
+    .catch(function(){});
+}catch(e){}
+</script>
+</body>
+</html>
